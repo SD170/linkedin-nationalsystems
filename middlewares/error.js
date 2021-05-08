@@ -8,7 +8,7 @@ const errorHandler = (err,req,res,next) =>{
 
 	  //Mongoose bad ObjectId
 	  if (err.name === "CastError") {
-	    const message = `USer not found with id of ${err.value}`;
+	    const message = `User not found with id of ${err.value}`;
 	    error = new ErrorResponse(message, 404);
 	  }
 
@@ -22,6 +22,11 @@ const errorHandler = (err,req,res,next) =>{
 	  if( err.name === 'ValidationError'){
 	    const message = Object.values(err.errors).map((m)=> m.message);
 	    error = new ErrorResponse(message, 400);
+	  }
+
+	  if(err.code === 2){
+	  	const message = `2MB Limit Exeeded`;
+	    error = new ErrorResponse(message, 404);
 	  }
 
 	  res.status(error.statusCode || 500).json({

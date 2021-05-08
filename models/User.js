@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+var fs = require('fs');
+
 
 const UserSchema = new mongoose.Schema({
 	name:{
@@ -27,9 +30,37 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		default: "no-photo.jpeg",
 	},
+	photoFile: {
+		data: Buffer, 
+		contentType: String 
+	},
+},
+{capped: 2100000}
+//{ capped: { size:2100000,  max: 1000, autoIndexId: true }}
+)
 
-
+//password hashing
+UserSchema.pre('save', async function (next){
+	try{
+		const salt = await bcrypt.genSalt(10);
+		const hashedPassword = await bcrypt.hash(this.password, salt);
+		this.password = hashedPassword;
+		next();
+	}catch(err){
+		next(err);
+	}
 })
+
+UserSchema.pre('save', async function (next){
+	try{
+		this.photoFile.data = fs.readFileSync(this.photo);
+		this.photoFile.contentType = 'image/png';
+		next();
+	}catch(err){
+		next(err);
+	}
+})
+
 
 module.exports = mongoose.model('User', UserSchema);
 
