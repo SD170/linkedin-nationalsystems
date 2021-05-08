@@ -1,24 +1,11 @@
 const express = require('express');
+//importing controller functions
+const {getUsers, getUser, createUser, updateUser, deleteUser} = require('../controllers/users');
+
+
 const router = express.Router();
 
-router.get('/', (req, res) => {
-	res.status(200).json({success:true, msg:'shows all users'})
-})
-
-router.get('/:id', (req, res) => {
-	res.status(200).json({success:true, msg:`shows user with id {req.params.id}`})
-})
-
-router.post('/', (req, res) => {
-	res.status(200).json({success:true, msg:'creates all users'})
-})
-
-router.put('/:id', (req, res) => {
-	res.status(200).json({success:true, msg:`updates user with id {req.params.id}`})
-})
-
-router.delete('/:id', (req, res) => {
-	res.status(200).json({success:true, msg:`deletes user with id {req.params.id}`})
-})
+router.route('/').get(getUsers).post(createUser);
+router.route('/:id').get(getUser).put(updateUser).delete(deleteUser);
 
 module.exports = router;
