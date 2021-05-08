@@ -99,7 +99,8 @@ exports.getUser = asyncHandler(async (req, res, next) =>{
 exports.createUser = asyncHandler( async (req, res, next) =>{
 
 	const user = await User.create(req.body);
-	res.status(201).json({success:true, data:user});
+	const newUser = await User.findById(user._id).select("-photoFile.data");
+	res.status(201).json({success:true, data:newUser});
 
 })
 
@@ -112,11 +113,12 @@ exports.updateUser = asyncHandler (async (req, res, next) =>{
 		new: true,
 		runValidators: true
 	})
+	const updatedUser = await User.findById(user._id).select("-photoFile.data");
 
 	if(!user){
 		return next(new errorResponse(`User not found with id of ${req.params.id}`, 404));
 	}
-	res.status(200).json({success:true, data:user});
+	res.status(200).json({success:true, data:updatedUser});
 })
 
 //	@desc		delete a user
