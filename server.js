@@ -10,7 +10,7 @@ const connectDB = require('./config/db');
 dotenv.config({path:'./config/config.env'});
 
 //connect to DB
-connectDB();
+const db = connectDB();
 
 //route file
 const users = require('./routes/users');

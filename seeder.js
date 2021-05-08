@@ -1,5 +1,5 @@
 //node seeder -i [imports users]
-//delete trom Compass
+//node seeder -d [deletes users]
 const fs = require("fs");
 const mongoose = require("mongoose");
 const colors = require("colors");
@@ -32,12 +32,22 @@ const importData = async () => {
     process.exit();
   } catch (err) {
     console.error(err);
-    console.log('2MB File Limit Exeeded'.red.inverse);
-
   }
 };
 
+//Delete from DB
+const deleteData = async () => {
+  try {
+    await User.deleteMany();
+    console.log("User data delete".red.inverse);
+    process.exit();
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 if (process.argv[2] === "-i") {
   importData();
+} else if (process.argv[2] === "-d") {
+  deleteData();
 }

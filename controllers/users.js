@@ -34,7 +34,9 @@ exports.getUsers = asyncHandler(async (req, res, next) =>{
 	// Select fields
 	if (req.query.select) {
 		const fields = req.query.select.split(",").join(" ");
-		query = query.select(fields);
+		query = query.select(fields,"-photoFile.data");
+	}else{
+		query=query.select("-photoFile.data");
 	}
 
 	  // Sort
@@ -82,13 +84,12 @@ exports.getUsers = asyncHandler(async (req, res, next) =>{
 //	@access		Public
 exports.getUser = asyncHandler(async (req, res, next) =>{
 
-	const user = await User.findById(req.params.id);
+	const user = await User.findById(req.params.id).select("-photoFile.data");
 	if(!user){
 		return next(new errorResponse (`User not found with id of ${req.params.id}`, 404));
 	}
 	res.status(200).json({success:true, data:user});
 
-	
 })
 
 
@@ -117,6 +118,7 @@ exports.updateUser = asyncHandler (async (req, res, next) =>{
 	}
 	res.status(200).json({success:true, data:user});
 })
+
 //	@desc		delete a user
 //	@route		DELETE /api/v1/users/:id
 //	@access		Public
@@ -129,6 +131,5 @@ exports.deleteUser = asyncHandler (async(req, res, next) =>{
 	res.status(200).json({success:true, data:{}});
 
 })
-
 
 

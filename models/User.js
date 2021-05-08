@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const errorResponse = require("../utils/errorResponse");
 const bcrypt = require('bcrypt');
 var fs = require('fs');
 
@@ -34,10 +35,11 @@ const UserSchema = new mongoose.Schema({
 		data: Buffer, 
 		contentType: String 
 	},
-},
-{capped: 2100000}
-//{ capped: { size:2100000,  max: 1000, autoIndexId: true }}
-)
+	createdAt: {
+		type: Date,
+    	default: Date.now,
+  	},
+})
 
 //password hashing
 UserSchema.pre('save', async function (next){
@@ -55,6 +57,9 @@ UserSchema.pre('save', async function (next){
 	try{
 		this.photoFile.data = fs.readFileSync(this.photo);
 		this.photoFile.contentType = 'image/png';
+		if(this.photoFile.data.byteLength > 2100000){
+			next(new errorResponse (`Max file size is 2MB`, 404))
+		}
 		next();
 	}catch(err){
 		next(err);
